@@ -1,3 +1,6 @@
+/* eslint-disable semi */
+/* eslint-disable comma-dangle */
+/* eslint-disable class-methods-use-this */
 class ApplicationError extends Error {
   get details() {
     return {};
