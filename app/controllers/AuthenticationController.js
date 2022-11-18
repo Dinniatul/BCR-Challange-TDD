@@ -1,6 +1,22 @@
-const ApplicationController = require("./ApplicationController");
-const { EmailNotRegisteredError, InsufficientAccessError, RecordNotFoundError, WrongPasswordError } = require("../errors");
-const { JWT_SIGNATURE_KEY } = require("../../config/application");
+/* eslint-disable space-infix-ops */
+/* eslint-disable eqeqeq */
+/* eslint-disable quotes */
+/* eslint-disable comma-dangle */
+/* eslint-disable array-bracket-spacing */
+/* eslint-disable no-undef */
+/* eslint-disable no-extra-boolean-cast */
+/* eslint-disable prefer-const */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable keyword-spacing */
+/* eslint-disable brace-style */
+/* eslint-disable nonblock-statement-body-position */
+/* eslint-disable curly */
+/* eslint-disable arrow-body-style */
+/* eslint-disable object-curly-newline */
+const ApplicationController = require('./ApplicationController');
+const { EmailNotRegisteredError, InsufficientAccessError, RecordNotFoundError, WrongPasswordError } = require('../errors');
+const { JWT_SIGNATURE_KEY } = require('../../config/application');
 
 class AuthenticationController extends ApplicationController {
   constructor({
@@ -17,16 +33,16 @@ class AuthenticationController extends ApplicationController {
   }
 
   accessControl = {
-    PUBLIC: "PUBLIC",
-    ADMIN: "ADMIN",
-    CUSTOMER: "CUSTOMER",
-  }
+    PUBLIC: 'PUBLIC',
+    ADMIN: 'ADMIN',
+    CUSTOMER: 'CUSTOMER',
+  };
 
   authorize =(rolename) => {
     return (req, res, next) => {
       try {
-        const token = req.headers.authorization?.split("Bearer ")[1];
-        const payload = this.decodeToken(token)
+        const token = req.headers.authorization?.split('Bearer ')[1];
+        const payload = this.decodeToken(token);
 
         if (!!rolename && rolename != payload.role.name)
           throw new InsufficientAccessError(payload?.role?.name);
@@ -41,18 +57,19 @@ class AuthenticationController extends ApplicationController {
             name: err.name,
             message: err.message,
             details: err.details || null,
-          }
-        })
+          },
+        });
       }
-    }
-  }
+    };
+  };
 
   handleLogin = async (req, res, next) => {
     try {
       const email = req.body.email.toLowerCase();
       const password = req.body.password;
       const user = await this.userModel.findOne({
-        where: { email, },
+        where: { email },
+
         include: [{ model: this.roleModel, attributes: [ "id", "name", ], }]
       });
 
@@ -74,13 +91,13 @@ class AuthenticationController extends ApplicationController {
 
       res.status(201).json({
         accessToken,
-      })
+      });
     }
 
     catch(err) {
       next(err);
     }
-  }
+  };
 
   handleRegister = async (req, res, next) => {
     try {
@@ -104,26 +121,27 @@ class AuthenticationController extends ApplicationController {
         email,
         encryptedPassword: this.encryptPassword(password),
         roleId: role.id,
-      }) 
+      // eslint-disable-next-line semi
+      })
 
       const accessToken = this.createTokenFromUser(user, role);
 
       res.status(201).json({
         accessToken,
-      })
+      });
     }
 
     catch(err) {
       next(err);
     }
-  }
+  };
 
   handleGetUser = async (req, res) => {
     const user = await this.userModel.findByPk(req.user.id);
 
     if (!user) {
       const err = new RecordNotFoundError(this.userModel.name);
-      res.status(404).json(err)
+      res.status(404).json(err);
       return;
     }
 
@@ -131,12 +149,12 @@ class AuthenticationController extends ApplicationController {
 
     if (!role) {
       const err = new RecordNotFoundError(this.roleModel.name);
-      res.status(404).json(err)
+      res.status(404).json(err);
       return;
     }
 
     res.status(200).json(user);
-  }
+  };
 
   createTokenFromUser = (user, role) => {
     return this.jwt.sign({
@@ -147,9 +165,9 @@ class AuthenticationController extends ApplicationController {
       role: {
         id: role.id,
         name: role.name,
-      }
+      },
     }, JWT_SIGNATURE_KEY);
-  }
+  };
 
   decodeToken(token) {
     return this.jwt.verify(token, JWT_SIGNATURE_KEY);
@@ -157,11 +175,11 @@ class AuthenticationController extends ApplicationController {
 
   encryptPassword = (password) => {
     return this.bcrypt.hashSync(password, 10);
-  }
+  };
 
   verifyPassword = (password, encryptedPassword) => {
-    return this.bcrypt.compareSync(password, encryptedPassword)
-  }
+    return this.bcrypt.compareSync(password, encryptedPassword);
+  };
 }
 
 module.exports = AuthenticationController;

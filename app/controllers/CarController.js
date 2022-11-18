@@ -1,3 +1,13 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-extra-boolean-cast */
+/* eslint-disable prefer-const */
+/* eslint-disable keyword-spacing */
+/* eslint-disable brace-style */
+/* eslint-disable no-trailing-spaces */
+/* eslint-disable semi */
+/* eslint-disable comma-dangle */
+/* eslint-disable no-unused-vars */
+/* eslint-disable quotes */
 const { Op } = require("sequelize");
 const ApplicationController = require("./ApplicationController");
 
@@ -65,9 +75,7 @@ class CarController extends ApplicationController {
     try {
       let { rentStartedAt, rentEndedAt } = req.body;
       const car = await this.getCarFromRequest(req)
-
       if (!rentEndedAt) rentEndedAt = this.dayjs(rentStartedAt).add(1, "day");
-
       const activeRent = await this.userCarModel.findOne({
         where: {
           carId: car.id,
