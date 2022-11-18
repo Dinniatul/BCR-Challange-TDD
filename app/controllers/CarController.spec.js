@@ -136,8 +136,6 @@ describe("CarController", ()=>{
         const image = "test.png";
         const isCurrentlyRented = false;
 
-        const err = new Error("Something");
-
   
         const mockRequest = {
           params: {
